@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    actor Jugador as Socio (S3)
+    participant Consola as MenuAcademiasSocio
+    participant Gestor as GestorAcademias
+    participant Club as Club
+    participant Partido as PartidoPractica (PP1)
+    participant Reserva as Reserva (R1)
+
+    Jugador->>Consola: Registrar resultado (PP1, Sets: S3 gana 2-1)
+    Consola->>Gestor: registrarResultadoPractica(s3, "PP1", stats)
+
+    activate Gestor
+    Gestor->>Club: buscarPartidoPractica("PP1")
+    Club-->>Gestor: partido (PP1)
+
+    Gestor->>Partido: registrarResultado(s3, stats)
+    activate Partido
+    Partido->>Partido: Validar que S3 sea participante
+    Partido->>Partido: Determinar ganador por sets (pareja en dobles)
+    Partido->>Partido: Calcular fórmula ELO oficial (K=32)
+    Note over Partido: En sencillos usa ELO rival, en dobles usa promedio ELO de la pareja rival
+    Partido->>Reserva: setEstado(FINALIZADA)
+    deactivate Partido
+
+    Gestor-->>Consola: Confirmación de resultado
+    deactivate Gestor
+
+    Consola-->>Jugador: Confirmación: Resultado guardado (Ganador: S3, ELO actualizado)
